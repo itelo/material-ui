@@ -2,10 +2,14 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import parse from 'autosuggest-highlight/parse';
-import match from 'autosuggest-highlight/match';
+// import parse from 'autosuggest-highlight/parse';
+// import match from 'autosuggest-highlight/match';
 
 export default function Highlights() {
+
+  const [top100Films, setTop100] = React.useState([
+    { title: 'The Shawshank Redemption', year: 1994 },
+  ]);
   return (
     <Autocomplete
       id="highlights-demo"
@@ -15,26 +19,39 @@ export default function Highlights() {
       renderInput={params => (
         <TextField {...params} label="Highlights" variant="outlined" fullWidth margin="normal" />
       )}
-      renderOption={(option, { inputValue }) => {
-        const matches = match(option.title, inputValue);
-        const parts = parse(option.title, matches);
+      noOptionsText="The Green Mile"
+      onNoOptionsSelected={(selectNewValue) => {
+        const newValue = { title: 'The Green Mile', year: 1999 }
+        setTop100(
+          [
+            ...top100Films,
+            newValue
+          ]
+        )
 
-        return (
-          <div>
-            {parts.map((part, index) => (
-              <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                {part.text}
-              </span>
-            ))}
-          </div>
-        );
+        selectNewValue(newValue);
       }}
+      // renderOption={(option, { inputValue }) => {
+      //   const matches = match(option.title, inputValue);
+      //   const parts = parse(option.title, matches);
+
+      //   return (
+      //     <div>
+      //       {parts.map((part, index) => (
+      //         <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+      //           {part.text}
+      //         </span>
+      //       ))}
+      //     </div>
+      //   );
+      // }}
     />
   );
 }
 
 // Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
-const top100Films = [
+// eslint-disable-next-line no-unused-vars
+const top100Films2 = [
   { title: 'The Shawshank Redemption', year: 1994 },
   { title: 'The Godfather', year: 1972 },
   { title: 'The Godfather: Part II', year: 1974 },

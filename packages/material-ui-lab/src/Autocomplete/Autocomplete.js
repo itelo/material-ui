@@ -271,6 +271,7 @@ const Autocomplete = React.forwardRef(function Autocomplete(props, ref) {
     loadingText = 'Loading…',
     multiple = false,
     noOptionsText = 'No options',
+    onNoOptionsSelected,
     onChange,
     onClose,
     onInputChange,
@@ -302,6 +303,7 @@ const Autocomplete = React.forwardRef(function Autocomplete(props, ref) {
     getClearProps,
     getTagProps,
     getListboxProps,
+    getNoOptionsSelectedProps,
     getOptionProps,
     value,
     dirty,
@@ -448,16 +450,21 @@ const Autocomplete = React.forwardRef(function Autocomplete(props, ref) {
             {loading && groupedOptions.length === 0 ? (
               <div className={classes.loading}>{loadingText}</div>
             ) : null}
-            {groupedOptions.length === 0 && !freeSolo && !loading ? (
+            {groupedOptions.length === 0 && !onNoOptionsSelected && !freeSolo && !loading ? (
               <div className={classes.noOptions}>{noOptionsText}</div>
             ) : null}
-            {groupedOptions.length > 0 ? (
+            {(groupedOptions.length > 0 || (groupedOptions.length === 0 && onNoOptionsSelected)) ? (
               <ListboxComponent
                 className={classes.listbox}
                 {...getListboxProps()}
                 {...ListboxProps}
               >
-                {groupedOptions.map((option, index) => {
+                {groupedOptions.length === 0 && onNoOptionsSelected ?
+                  <li className={classes.option} {...getNoOptionsSelectedProps()}>
+                    {noOptionsText}
+                  </li> :  null
+                }
+                {groupedOptions.length > 0 ? groupedOptions.map((option, index) => {
                   if (groupBy) {
                     return renderGroup({
                       key: option.key,
@@ -467,7 +474,7 @@ const Autocomplete = React.forwardRef(function Autocomplete(props, ref) {
                     });
                   }
                   return renderListOption(option, index);
-                })}
+                }) : null}
               </ListboxComponent>
             ) : null}
           </PaperComponent>
@@ -680,6 +687,12 @@ Autocomplete.propTypes = {
    * @param {string} reason Can be: `"input"` (user input), `"reset"` (programmatic change), `"clear"`.
    */
   onInputChange: PropTypes.func,
+  /**
+   * Text to display when there are no options.
+   *
+   * For localization purposes, you can use the provided [translations](/guides/localization/).
+   */
+  onNoOptionsSelected: PropTypes.elementType,
   /**
    * Callback fired when the popup requests to be opened.
    * Use in controlled mode (see open).

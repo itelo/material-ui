@@ -105,6 +105,20 @@ export interface AutocompleteProps<T>
    */
   openText?: string;
   /**
+   * Callback fired to update the value of selected option.
+   *
+   * @callback selectNewValueCallback
+   * @param {T} newOptionValue - The option to be selected.
+   * @returns {void}
+   */
+  /**
+   * Callback fired when clicked on noOptionsText.
+   *
+   * @param {selectNewValueCallback} callback - update the selected option.
+   * @returns {void}
+   */
+  onNoOptionsSelected?: (selectNewValueCallback?: (newOptionValue: T) => void) => void;
+  /**
    * The component used to render the body of the popup.
    */
   PaperComponent?: React.ComponentType<React.HTMLAttributes<HTMLElement>>;

@@ -227,6 +227,7 @@ export default function useAutocomplete<T>(
   getPopupIndicatorProps: () => {};
   getTagProps: ({ index }: { index: number }) => {};
   getListboxProps: () => {};
+  getNoOptionsSelectedProps: () => {};
   getOptionProps: ({ option, index }: { option: T; index: number }) => {};
   id: string;
   inputValue: string;

@@ -2,40 +2,120 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import parse from 'autosuggest-highlight/parse';
-import match from 'autosuggest-highlight/match';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
-export default function Highlights() {
+export default function NoOptions() {
+  const [top100Films, setTop100] = React.useState([...top100Films2]);
+
+  const [newFilm, setNewFilm] = React.useState({ title: undefined, year: undefined });
+
+  const [select, setSelect] = React.useState({});
+
+  const [open, setOpen] = React.useState(false);
+console.log("AD")
+  const handleClickOpen = s => {
+    setSelect({ s });
+    setOpen(true);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+    setNewFilm({ title: undefined, year: undefined });
+  };
+
+  const handleAdd = () => {
+    setTop100([...top100Films, newFilm]);
+    setNewFilm({ title: undefined, year: undefined });
+    setOpen(false);
+    select.s(newFilm);
+  };
+
   return (
-    <Autocomplete
-      id="highlights-demo"
-      style={{ width: 300 }}
-      options={top100Films}
-      noOptionsText="The Green Mile"
-      getOptionLabel={option => option.title}
-      renderInput={params => (
-        <TextField {...params} label="Highlights" variant="outlined" fullWidth margin="normal" />
-      )}
-      // renderOption={(option, { inputValue }) => {
-      //   const matches = match(option.title, inputValue);
-      //   const parts = parse(option.title, matches);
+    <>
+      <Dialog open={open} onClose={handleCancel} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Add a new film</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            If you think we missed some film, please enter the title and year here.
+          </DialogContentText>
+          <TextField
+            onChange={event =>
+              setNewFilm({
+                ...newFilm,
+                title: event.target.value,
+              })
+            }
+            value={newFilm.title}
+            autoFocus
+            placeholder="The Shawshank Redemption"
+            margin="dense"
+            id="title"
+            label="Title"
+            type="text"
+            fullWidth
+          />
+          <TextField
+            onChange={event =>
+              setNewFilm({
+                ...newFilm,
+                year: event.target.value,
+              })
+            }
+            value={newFilm.year}
+            margin="dense"
+            placeholder="1994"
+            id="year"
+            label="Year"
+            type="number"
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleAdd} color="primary">
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Autocomplete
+        id="no-options-demo"
+        style={{ width: 300 }}
+        options={top100Films}
+        getOptionLabel={option => option.title}
+        renderInput={params => (
+          <TextField {...params} label="no-options" variant="outlined" fullWidth margin="normal" />
+        )}
+        noOptionsText="The Green Mile"
+        onNoOptionsSelected={s => {
+          // console.log({s})
+          // setSelect(s)
+          // s({ title: 'The Green Mile', year: 1999 })
+          handleClickOpen(s);
+          // const newValue = { title: 'The Green Mile', year: 1999 }
+          // setTop100(
+          //   [
+          //     ...top100Films,
+          //     newValue
+          //   ]
+          // )
 
-      //   return (
-      //     <div>
-      //       {parts.map((part, index) => (
-      //         <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-      //           {part.text}
-      //         </span>
-      //       ))}
-      //     </div>
-      //   );
-      // }}
-    />
+          // selectNewValue(newValue);
+        }}
+      />
+    </>
   );
 }
 
 // Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
-const top100Films = [
+// eslint-disable-next-line no-unused-vars
+const top100Films2 = [
   { title: 'The Shawshank Redemption', year: 1994 },
   { title: 'The Godfather', year: 1972 },
   { title: 'The Godfather: Part II', year: 1974 },

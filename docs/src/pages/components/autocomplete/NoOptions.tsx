@@ -1,35 +1,16 @@
 /* eslint-disable no-use-before-define */
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import parse from 'autosuggest-highlight/parse';
-import match from 'autosuggest-highlight/match';
 
 export default function Highlights() {
+  const [top100FilmsInState, setTop100Films] = React.useState(top100Films)
   return (
     <Autocomplete
       id="highlights-demo"
       style={{ width: 300 }}
-      options={top100Films}
+      options={top100FilmsInState}
       noOptionsText="The Green Mile"
       getOptionLabel={option => option.title}
-      renderInput={params => (
-        <TextField {...params} label="Highlights" variant="outlined" fullWidth margin="normal" />
-      )}
-      // renderOption={(option, { inputValue }) => {
-      //   const matches = match(option.title, inputValue);
-      //   const parts = parse(option.title, matches);
-
-      //   return (
-      //     <div>
-      //       {parts.map((part, index) => (
-      //         <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-      //           {part.text}
-      //         </span>
-      //       ))}
-      //     </div>
-      //   );
-      // }}
     />
   );
 }

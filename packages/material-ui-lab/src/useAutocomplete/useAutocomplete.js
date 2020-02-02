@@ -105,6 +105,7 @@ export default function useAutocomplete(props) {
     onClose,
     onOpen,
     onInputChange,
+    onNoOptionsSelected,
     open: openProp,
     options = [],
     selectOnFocus = !props.freeSolo,
@@ -532,6 +533,28 @@ export default function useAutocomplete(props) {
     handleValue(event, multiple ? [] : null);
   };
 
+  const isTouch = React.useRef(false);
+
+  const handleNoOptionsSelected = (event) => {
+    const select = (newValue) => {
+      selectNewValue(event, newValue, 'noOption');
+    }
+
+    if (onNoOptionsSelected) {
+      onNoOptionsSelected(select);
+    }
+
+    if (
+      blurOnSelect === true ||
+      (blurOnSelect === 'touch' && isTouch.current) ||
+      (blurOnSelect === 'mouse' && !isTouch.current)
+    ) {
+      inputRef.current.blur();
+    }
+
+    isTouch.current = false;
+  }
+
   const handleKeyDown = other => event => {
     if (focusedTag !== -1 && ['ArrowLeft', 'ArrowRight'].indexOf(event.key) === -1) {
       setFocusedTag(-1);
@@ -586,9 +609,11 @@ export default function useAutocomplete(props) {
       case 'Enter':
         // Wait until IME is settled.
         if (event.which === 229) {
+
           break;
         }
         if (highlightedIndexRef.current !== -1 && popupOpen) {
+
           // We don't want to validate the form.
           event.preventDefault();
           selectNewValue(event, filteredOptions[highlightedIndexRef.current]);
@@ -600,11 +625,17 @@ export default function useAutocomplete(props) {
               inputRef.current.value.length,
             );
           }
-        } else if (freeSolo && inputValue !== '' && inputValueIsSelectedValue === false) {
+        } else if ((freeSolo || onNoOptionsSelected) && inputValue !== '' && inputValueIsSelectedValue === false) {
           if (multiple) {
             // Allow people to add new values before they submit the form.
             event.preventDefault();
           }
+
+          if (onNoOptionsSelected) {
+            handleNoOptionsSelected(event);
+            break;
+          }
+
           selectNewValue(event, inputValue, 'freeSolo');
         }
         break;
@@ -695,8 +726,6 @@ export default function useAutocomplete(props) {
     const index = Number(event.currentTarget.getAttribute('data-option-index'));
     setHighlightedIndex(index, 'mouse');
   };
-
-  const isTouch = React.useRef(false);
 
   const handleOptionTouchStart = () => {
     isTouch.current = true;
@@ -862,6 +891,22 @@ export default function useAutocomplete(props) {
         event.preventDefault();
       },
     }),
+    getNoOptionsSelectedProps: () => {
+      const index = 0;
+
+      return {
+        key: index,
+        tabIndex: -1,
+        role: 'option',
+        id: `${id}-option-${index}`,
+        onMouseOver: handleOptionMouseOver,
+        onClick: handleNoOptionsSelected,
+        onTouchStart: handleOptionTouchStart,
+        'data-option-index': index,
+        'aria-disabled': false,
+        'aria-selected': false,
+      };
+    },
     getOptionProps: ({ index, option }) => {
       const selected = (multiple ? value : [value]).some(
         value2 => value2 != null && getOptionSelected(option, value2),

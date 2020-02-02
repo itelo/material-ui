@@ -46,6 +46,14 @@ However, if you intend to use it for a [combo box](#combo-box) like experience (
 
 {{"demo": "pages/components/autocomplete/DisabledOptions.js"}}
 
+## No options
+
+{{"demo": "pages/components/autocomplete/NoOptions.js"}}
+
+## No options Dialog
+
+{{"demo": "pages/components/autocomplete/NoOptionsDialog.js"}}
+
 ## `useAutocomplete`
 
 For advanced customization use cases, we expose a `useAutocomplete()` hook.
