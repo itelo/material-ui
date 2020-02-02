@@ -137,17 +137,20 @@ export default function useAutocomplete(props) {
     highlightedIndexRef.current = index;
     // does the index exist?
     if (index === -1) {
+      console.log("(index === -1) {");
       inputRef.current.removeAttribute('aria-activedescendant');
     } else {
       inputRef.current.setAttribute('aria-activedescendant', `${id}-option-${index}`);
     }
 
     if (!listboxRef.current) {
+      console.log("(!listboxRef.current) {");
       return;
     }
 
     const prev = listboxRef.current.querySelector('[data-focus]');
     if (prev) {
+      console.log("(prev) {");
       prev.removeAttribute('data-focus');
     }
 
@@ -155,10 +158,12 @@ export default function useAutocomplete(props) {
 
     // "No results"
     if (!listboxNode) {
+      console.log("(!listboxNode) {");
       return;
     }
 
     if (index === -1) {
+      console.log("(index === -1) {");
       listboxNode.scrollTop = 0;
       return;
     }
@@ -166,6 +171,7 @@ export default function useAutocomplete(props) {
     const option = listboxRef.current.querySelector(`[data-option-index="${index}"]`);
 
     if (!option) {
+      console.log("(!option) {");
       return;
     }
 
@@ -177,16 +183,21 @@ export default function useAutocomplete(props) {
     // Consider this API instead once it has a better browser support:
     // .scrollIntoView({ scrollMode: 'if-needed', block: 'nearest' });
     if (listboxNode.scrollHeight > listboxNode.clientHeight && !mouse) {
+      console.log("(listboxNode.scrollHeight > listboxNode.clientHeight && !mouse) {");
       const element = option;
 
       const scrollBottom = listboxNode.clientHeight + listboxNode.scrollTop;
       const elementBottom = element.offsetTop + element.offsetHeight;
       if (elementBottom > scrollBottom) {
+        console.log("(elementBottom > scrollBottom) {");
         listboxNode.scrollTop = elementBottom - listboxNode.clientHeight;
       } else if (
+
+
         element.offsetTop - element.offsetHeight * (groupBy ? 1.3 : 0) <
         listboxNode.scrollTop
       ) {
+        console.log("(element.offsetTop - element.offsetHeight * (groupBy ? 1.3 : 0) < listboxNode.scrollTop");
         listboxNode.scrollTop = element.offsetTop - element.offsetHeight * (groupBy ? 1.3 : 0);
       }
     }
@@ -343,7 +354,13 @@ export default function useAutocomplete(props) {
         return maxIndex;
       }
 
+      console.log({highlightedIndexRef});
+      console.log({diff})
+      console.log(highlightedIndexRef.current)
+      console.log(diff)
+      console.log(highlightedIndexRef.current + diff);
       const newIndex = highlightedIndexRef.current + diff;
+      console.log({ newIndex });
 
       if (newIndex < 0) {
         if (newIndex === -1 && includeInputInList) {
@@ -373,14 +390,25 @@ export default function useAutocomplete(props) {
     };
 
     const nextIndex = validOptionIndex(getNextIndex(), direction);
-    setHighlightedIndex(nextIndex);
+
+    if (onNoOptionsSelected) {
+      // setHighlightedIndex(0);
+      setHighlightedIndex(nextIndex);
+    } else {
+      setHighlightedIndex(nextIndex);
+    }
+
+
     selectedIndexRef.current = nextIndex;
 
     if (autoComplete && diff !== 'reset') {
       if (nextIndex === -1) {
+        console.log('here');
         inputRef.current.value = inputValue;
       } else {
+        console.log('here2');
         const option = getOptionLabel(filteredOptions[nextIndex]);
+        console.log(option);
         inputRef.current.value = option;
 
         // The portion of the selected suggestion that has not been typed by the user,
@@ -436,6 +464,7 @@ export default function useAutocomplete(props) {
   };
 
   const selectNewValue = (event, newValue, origin = 'option') => {
+    console.log({ event, newValue, origin });
     if (multiple) {
       const item = newValue;
       newValue = Array.isArray(value) ? [...value] : [];
@@ -613,6 +642,10 @@ export default function useAutocomplete(props) {
           break;
         }
         if (highlightedIndexRef.current !== -1 && popupOpen) {
+          if (onNoOptionsSelected) {
+            handleNoOptionsSelected(event);
+            break;
+          }
 
           // We don't want to validate the form.
           event.preventDefault();
@@ -629,11 +662,6 @@ export default function useAutocomplete(props) {
           if (multiple) {
             // Allow people to add new values before they submit the form.
             event.preventDefault();
-          }
-
-          if (onNoOptionsSelected) {
-            handleNoOptionsSelected(event);
-            break;
           }
 
           selectNewValue(event, inputValue, 'freeSolo');

@@ -12,27 +12,26 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 export default function NoOptions() {
   const [top100Films, setTop100] = React.useState([...top100Films2]);
 
-  const [newFilm, setNewFilm] = React.useState({ title: undefined, year: undefined });
+  const [newFilm, setNewFilm] = React.useState({ title: '', year: null });
 
-  const [select, setSelect] = React.useState({});
+  const [selected, setSelected] = React.useState(top100Films2[0]);
 
   const [open, setOpen] = React.useState(false);
-console.log("AD")
-  const handleClickOpen = s => {
-    setSelect({ s });
+
+  const handleOpen = () => {
     setOpen(true);
   };
 
   const handleCancel = () => {
     setOpen(false);
-    setNewFilm({ title: undefined, year: undefined });
+    setNewFilm({ title: '', year: null });
   };
 
   const handleAdd = () => {
     setTop100([...top100Films, newFilm]);
-    setNewFilm({ title: undefined, year: undefined });
+    setSelected(newFilm);
+    setNewFilm({ title: '', year: null });
     setOpen(false);
-    select.s(newFilm);
   };
 
   return (
@@ -86,28 +85,19 @@ console.log("AD")
       </Dialog>
       <Autocomplete
         id="no-options-demo"
+        value={selected}
         style={{ width: 300 }}
         options={top100Films}
         getOptionLabel={option => option.title}
         renderInput={params => (
           <TextField {...params} label="no-options" variant="outlined" fullWidth margin="normal" />
         )}
-        noOptionsText="The Green Mile"
-        onNoOptionsSelected={s => {
-          // console.log({s})
-          // setSelect(s)
-          // s({ title: 'The Green Mile', year: 1999 })
-          handleClickOpen(s);
-          // const newValue = { title: 'The Green Mile', year: 1999 }
-          // setTop100(
-          //   [
-          //     ...top100Films,
-          //     newValue
-          //   ]
-          // )
-
-          // selectNewValue(newValue);
+        onInputChange={(_, value) => {
+          console.log(value);
+          // setNewFilm({...newFilm, title: value})
         }}
+        noOptionsText={`Create option ${newFilm.title}`}
+        onNoOptionsSelected={handleOpen}
       />
     </>
   );
